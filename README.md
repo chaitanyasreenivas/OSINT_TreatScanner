@@ -21,3 +21,5 @@ TreatScan is a comprehensive, multi-source Open Source Intelligence (OSINT) tool
    ```bash
    python3 -m venv venv
    source venv/bin/activate
+
+   
