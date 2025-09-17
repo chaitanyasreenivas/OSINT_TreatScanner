@@ -1,0 +1,24 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}Shodan Details{% endblock %}
+{% block header %}Shodan Scan Report{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        {% if data.error %}
+            <p class="error-message">{{ data.error }}</p>
+        {% else %}
+            <ul>
+                {% for key, value in data.items() %}
+                    <li><strong>{{ key | replace('_', ' ') | title }}</strong>
+                        {% if value is iterable and value is not string %}
+                            <ul>{% for item in value %}<li>{{ item }}</li>{% else %}<li>None</li>{% endfor %}</ul>
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

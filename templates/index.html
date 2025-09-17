@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreatScan // Live Intelligence Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-deep-space: #03001C;
+            --primary-dark-blue: #0a0129;
+            --secondary-glow-blue: #301E67;
+            --accent-cyan: #00FFFF;
+            --accent-magenta: #FF00FF;
+            --font-light: #E0E0E0;
+        }
+        body {
+            font-family: 'Roboto Mono', monospace; background-color: var(--background-deep-space);
+            color: var(--font-light); margin: 0; padding: 0; display: flex;
+            justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
+        }
+        #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
+        .container {
+            width: 90%; max-width: 900px; background: rgba(10, 1, 41, 0.85);
+            border: 1px solid var(--secondary-glow-blue); backdrop-filter: blur(10px);
+            border-radius: 10px; padding: 50px; box-shadow: 0 0 25px rgba(48, 30, 103, 0.7);
+            text-align: center; position: relative; z-index: 2;
+        }
+        .glitch {
+            font-family: 'Orbitron', sans-serif; color: var(--accent-cyan);
+            font-size: 3.5em; position: relative; text-shadow: 0 0 10px var(--accent-cyan);
+        }
+        .subtitle {
+            font-size: 1.1em; color: var(--font-light); margin: 20px 0 40px;
+            display: inline-block; overflow: hidden; border-right: .15em solid var(--accent-cyan);
+            white-space: nowrap; letter-spacing: .1em;
+            animation: typing 4s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--accent-cyan); } }
+        .input-group { display: flex; }
+        input[type="text"] {
+            font-family: 'Roboto Mono', monospace; flex-grow: 1; padding: 15px;
+            border: 1px solid var(--secondary-glow-blue); border-radius: 5px 0 0 5px;
+            background-color: var(--background-deep-space); color: var(--font-light);
+            font-size: 1em; outline: none; transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        input[type="submit"] {
+            font-family: 'Orbitron', sans-serif; padding: 15px 30px;
+            border: 1px solid var(--accent-cyan); border-left: none; border-radius: 0 5px 5px 0;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-magenta));
+            color: white; font-size: 1em; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            box-shadow: 0 0 20px var(--accent-magenta); transform: scale(1.05);
+        }
+        .deep-scan-option { margin-top: 20px; color: #aaa; }
+        .deep-scan-option input { margin-right: 10px; transform: scale(1.2); }
+        .history-link { margin-top: 30px; }
+        .history-link a {
+            color: var(--accent-cyan); text-decoration: none; font-weight: bold;
+        }
+        .history-link a:hover { color: var(--accent-magenta); }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <h1 class="glitch" data-text="TREATSCAN">TREATSCAN</h1>
+        <p class="subtitle">Live OSINT & Threat Analysis Engine</p>
+        <form action="/scan" method="post">
+            <div class="input-group">
+                <input type="text" name="target" placeholder="Enter URL, IP, Email, or Username..." required>
+                <input type="submit" value="[ EXECUTE ]">
+            </div>
+            <div class="deep-scan-option">
+                <label>
+                    <input type="checkbox" name="deep_scan" value="true">
+                    Perform Deep Scan (Scans IPs found in DNS)
+                </label>
+            </div>
+        </form>
+        <div class="history-link">
+            <a href="{{ url_for('history') }}">View Scan History</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {"particles":{"number":{"value":100,"density":{"enable":true,"value_area":800}},"color":{"value":"#00ffff"},"shape":{"type":"circle"},"opacity":{"value":0.6,"random":true},"size":{"value":3,"random":true},"line_linked":{"enable":true,"distance":150,"color":"#ffffff","opacity":0.2,"width":1},"move":{"enable":true,"speed":2,"direction":"none","out_mode":"out"}},"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":true,"mode":"repulse"}}},"retina_detect":true});
+    </script>
+</body>
+</html>

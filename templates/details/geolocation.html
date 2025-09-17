@@ -1,0 +1,14 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}Geolocation Details{% endblock %}
+{% block header %}IP Geolocation{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        <ul>
+            {% for key, value in data.items() %}
+                <li><strong>{{ key | title }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

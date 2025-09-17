@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaitanya Sreenivas | TreatScan Project Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-light: #F9FAFB;
+            --bg-white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-secondary: #4B5563;
+            --accent-purple: #8B5CF6;
+            --accent-teal: #14B8A6;
+            --border-color: #E5E7EB;
+            --shadow-soft: rgba(0, 0, 0, 0.05);
+            --shadow-medium: rgba(0, 0, 0, 0.1);
+            --highlight-gradient: linear-gradient(45deg, var(--accent-purple), var(--accent-teal));
+            --tech-badge-gradient: linear-gradient(90deg, #DCE2F0, #EAEFFF);
+
+            /* New vibrant gradient for CTA section */
+            --cta-gradient: linear-gradient(135deg, #FF6B6B, #F06292, #BA68C8, #64B5F6); 
+            --cta-text-color: #FFFFFF;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.8em;
+            background: var(--highlight-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent-purple);
+        }
+
+        /* --- Hero Section --- */
+        #hero {
+            padding: 120px 0;
+            text-align: center;
+        }
+        #hero h1 {
+            font-size: 4.5em;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        #hero .tagline {
+            font-size: 1.4em;
+            max-width: 750px;
+            margin: 0 auto 40px auto;
+        }
+        
+        .hero-image {
+            margin-top: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -12px var(--shadow-medium);
+        }
+        .hero-image img {
+            width: 100%;
+            display: block;
+        }
+
+        /* --- Section Styling --- */
+        section {
+            padding: 100px 0;
+        }
+        .section-heading {
+            text-align: center;
+            font-size: 3.2em;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        .section-subheading {
+            text-align: center;
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 80px auto;
+        }
+        
+        /* --- Feature Section (Single Row Cards) --- */
+        #features {
+            background-color: var(--bg-white);
+        }
+        .features-grid-single-row {
+            display: flex; /* Use flex for horizontal layout */
+            flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+            justify-content: center; /* Center cards horizontally */
+            gap: 30px; /* Space between cards */
+        }
+        .feature-card {
+            background-color: var(--bg-light);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 1 1 300px; /* Allow cards to grow/shrink, with a base width of 300px */
+            max-width: calc(25% - 22.5px); /* Max 4 cards per row, accounting for gap */
+            text-align: left; /* Align text within card */
+        }
+
+        /* Adjust for smaller screens to ensure cards are not too small */
+        @media (max-width: 1200px) {
+            .feature-card {
+                max-width: calc(33.333% - 20px); /* Max 3 cards per row */
+            }
+        }
+        @media (max-width: 768px) {
+            .feature-card {
+                max-width: calc(50% - 15px); /* Max 2 cards per row */
+            }
+        }
+        @media (max-width: 480px) {
+            .feature-card {
+                max-width: 100%; /* Single card per row on very small screens */
+            }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow-soft);
+        }
+        .feature-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .feature-card-header i {
+            font-size: 1.8em;
+            margin-right: 15px;
+            background: var(--highlight-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .feature-card-header h3 {
+            font-size: 1.4em;
+            color: var(--text-dark);
+            margin: 0;
+        }
+        
+        /* --- Gallery Section (Zig-Zag) --- */
+        .gallery-item-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+        @media (min-width: 768px) {
+            .gallery-item-full {
+                grid-template-columns: 1fr 1fr;
+            }
+            .gallery-item-full:nth-child(odd) .gallery-text {
+                order: 2;
+            }
+            .gallery-item-full:nth-child(odd) .gallery-image {
+                order: 1;
+            }
+            .gallery-item-full:nth-child(even) .gallery-text {
+                order: 1;
+            }
+            .gallery-item-full:nth-child(even) .gallery-image {
+                order: 2;
+            }
+        }
+        .gallery-image img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px var(--shadow-medium);
+        }
+        .gallery-text h3 {
+            font-size: 2em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            background: var(--highlight-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gallery-text p {
+            font-size: 1.1em;
+        }
+
+        /* --- Tech Stack Section --- */
+        #tech-stack {
+             background-color: var(--bg-white);
+        }
+        .tech-stack-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .tech-badge {
+            background: var(--tech-badge-gradient);
+            color: var(--text-dark);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-soft);
+        }
+        
+        /* --- CTA Section (New Theme) --- */
+        #cta {
+            background: var(--cta-gradient); /* Apply new vibrant gradient */
+            color: var(--cta-text-color);
+            text-align: center;
+            padding: 100px 0; /* Ensure sufficient padding */
+        }
+        #cta .section-heading {
+            color: var(--cta-text-color);
+        }
+        #cta .section-subheading {
+            color: rgba(255, 255, 255, 0.9); /* Slightly muted white for subheading */
+        }
+        .cta-button-dark {
+            background: rgba(255, 255, 255, 0.2); /* Semi-transparent white for button */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: var(--cta-text-color);
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .cta-button-dark:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .cta-button-dark i {
+            margin-right: 10px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 60px 0;
+            text-align: center; /* Center footer content */
+        }
+        .footer-links {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            display: flex; /* Use flexbox for social icons */
+            justify-content: center; /* Center icons horizontally */
+            gap: 25px; /* Space between icons */
+        }
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 2em; /* Slightly larger icons */
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: var(--accent-purple);
+        }
+        .footer-copyright {
+            font-size: 0.9em;
+            color: var(--text-secondary); /* Ensure copyright text is visible */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">TreatScan</div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#gallery">Gallery</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="container">
+                <h1 class="section-heading">AI-Powered Threat Intelligence Platform</h1>
+                <p class="tagline section-subheading">A full-stack web application designed to automate OSINT, accelerate analysis, and provide security professionals with clear, actionable insights.</p>
+                <div class="hero-image">
+                    <img src="Screenshots/Img1.png" alt="TreatScan Live Threat Dashboard">
+                </div>
+            </div>
+        </section>
+
+        <section id="features">
+            <div class="container">
+                <h2 class="section-heading">Core Capabilities</h2>
+                <p class="section-subheading">TreatScan was built to solve the core challenges of modern threat intelligence: speed, context, and actionability.</p>
+                <div class="features-grid-single-row">
+                    <div class="feature-card">
+                        <div class="feature-card-header">
+                            <i class="fas fa-sitemap"></i>
+                            <h3>Automated OSINT Aggregation</h3>
+                        </div>
+                        <p>Eliminates manual data collection by concurrently querying dozens of sources (VirusTotal, Shodan, etc.) to build a comprehensive profile of any target IP, domain, or email.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-header">
+                            <i class="fas fa-brain"></i>
+                            <h3>AI-Powered Synthesis</h3>
+                        </div>
+                        <p>Leverages generative AI to translate raw data into actionable intelligence, providing executive summaries, MITRE ATT&CK mapping, and clear mitigation recommendations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-header">
+                            <i class="fas fa-project-diagram"></i>
+                            <h3>Infrastructure Visualization</h3>
+                        </div>
+                        <p>Features a dynamic network graph that visually maps relationships between domains and IPs, allowing analysts to instantly uncover hidden attacker infrastructure.</p>
+                    </div>
+                     <div class="feature-card">
+                        <div class="feature-card-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Proactive Threat Hunting</h3>
+                        </div>
+                        <p>Bridges the gap between analysis and defense by automatically generating ready-to-use Sigma rules for integration into SIEMs and other security platforms.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery">
+            <div class="container">
+                 <h2 class="section-heading">Project In Action</h2>
+                 <p class="section-subheading">Explore key features of TreatScan through detailed screenshots and descriptions of the workflow.</p>
+                 
+                 <div class="gallery-item-full">
+                    <div class="gallery-image">
+                        <img src="Screenshots/Img2.png" alt="AI Summary and Infrastructure Graph">
+                    </div>
+                    <div class="gallery-text">
+                        <h3>Interactive Threat Overview</h3>
+                        <p>This view combines an executive AI-generated summary of identified threats with a dynamic network graph. The graph visually represents relationships between suspicious IPs, domains, and entities, allowing analysts to quickly grasp complex infrastructure and identify command-and-control structures or linked malicious assets.</p>
+                    </div>
+                 </div>
+
+                 <div class="gallery-item-full">
+                    <div class="gallery-image">
+                        <img src="Screenshots/Img4.png" alt="Detailed OSINT Result Cards">
+                    </div>
+                    <div class="gallery-text">
+                        <h3>Comprehensive Data Aggregation</h3>
+                        <p>Detailed cards present aggregated data from multiple OSINT sources (e.g., VirusTotal, Shodan, AlienVault OTX) in an organized and digestible format. Each card provides specific threat intelligence, vulnerability information, and contextual details for the target, streamlining the initial investigation phase.</p>
+                    </div>
+                 </div>
+
+                 <div class="gallery-item-full">
+                    <div class="gallery-image">
+                        <img src="Screenshots/Img13.png" alt="Sigma Rule Generation">
+                    </div>
+                    <div class="gallery-text">
+                        <h3>Automated Detection Rule Generation</h3>
+                        <p>Beyond analysis, TreatScan enables proactive defense. This screenshot highlights the functionality to automatically generate Sigma rules based on identified threat indicators. These rules are ready for deployment in SIEM (Security Information and Event Management) systems, facilitating rapid detection of similar future threats.</p>
+                    </div>
+                 </div>
+
+                 <div class="gallery-item-full">
+                    <div class="gallery-image">
+                        <img src="Screenshots/Img16.png" alt="Scan History Page">
+                    </div>
+                    <div class="gallery-text">
+                        <h3>Centralized Scan History & Management</h3>
+                        <p>The scan history page provides an overview of all past investigations, including the target, date of scan, and a summary of findings. This feature allows security teams to track ongoing threats, revisit previous analyses, and maintain an auditable record of their threat intelligence activities.</p>
+                    </div>
+                 </div>
+
+            </div>
+        </section>
+        
+        <section id="tech-stack">
+            <div class="container">
+                <h2 class="section-heading">Technology Stack</h2>
+                <p class="section-subheading">This project was built using a modern, robust technology stack chosen for performance, scalability, and ease of development.</p>
+                <div class="tech-stack-container">
+                    <span class="tech-badge">Python 3</span>
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">SQLAlchemy</span>
+                    <span class="tech-badge">HTML5 & CSS3</span>
+                    <span class="tech-badge">JavaScript</span>
+                    <span class="tech-badge">Google Generative AI</span>
+                    <span class="tech-badge">Chart.js</span>
+                    <span class="tech-badge">Vis.js</span>
+                    <span class="tech-badge">REST APIs</span>
+                    <span class="tech-badge">Concurrency</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta">
+            <div class="container">
+                <h2 class="section-heading">Explore the Project</h2>
+                <p class="section-subheading">The complete source code is available on GitHub. Feel free to explore the repository, examine the implementation, and see how all the components work together.</p>
+                <a href="https://github.com/chaitanyasreenivas/Treatscan" class="cta-button-dark" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </div>
+        </section>
+    </main>
+
+       <footer id="contact">
+        <div class="container">
+            <h2 class="section-heading">Let's Connect</h2>
+            <div class="footer-links">
+                <a href="https://github.com/chaitanyasreenivas" target="_blank" aria-label="GitHub Profile"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/chaitanya-sreenivas/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:chaitanyasreenivas1999@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 Chaitanya Sreenivas</p>
+        </div>
+    </footer>
+</body>
+</html>

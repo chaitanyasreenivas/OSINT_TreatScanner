@@ -1,0 +1,29 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}Certificate Details{% endblock %}
+{% block header %}SSL/TLS Certificate Details{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        {% if data.error %}
+            <p class="error-message">{{ data.error }}</p>
+        {% else %}
+            <ul>
+                <li><strong>Subject Common Name:</strong> {{ data.subject.commonName }}</li>
+                <li><strong>Issuer:</strong> {{ data.issuer.commonName }}</li>
+                <li><strong>Valid From:</strong> {{ data.valid_from }}</li>
+                <li><strong>Valid Until:</strong> {{ data.valid_until }}</li>
+                <li><strong>Serial Number:</strong> {{ data.serial_number }}</li>
+                <li><strong>Subject Alternative Names (SANs):</strong>
+                    <ul>
+                        {% for name in data.subject_alt_names %}
+                            <li>{{ name }}</li>
+                        {% else %}
+                            <li>None</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

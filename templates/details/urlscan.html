@@ -1,0 +1,25 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}urlscan.io Details{% endblock %}
+{% block header %}urlscan.io Report{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        {% if data.error %}
+            <p class="error-message">{{ data.error }}</p>
+        {% else %}
+            <ul>
+                <li><strong>Overall Verdict:</strong> {{ data.overall_verdict }}</li>
+                <li><strong>Main IP Address:</strong> {{ data.main_ip }}</li>
+                <li><strong>Server Location:</strong> {{ data.main_country }}</li>
+                <li><strong>Server Type:</strong> {{ data.server_type or 'N/A' }}</li>
+                <li><strong>Contacted Domains:</strong>
+                    <ul>{% for domain in data.contacted_domains %}<li>{{ domain }}</li>{% else %}<li>None</li>{% endfor %}</ul>
+                </li>
+                <li><strong>SSL Certificate Issuers:</strong>
+                    <ul>{% for issuer in data.ssl_certificate_issuers %}<li>{{ issuer }}</li>{% else %}<li>None</li>{% endfor %}</ul>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

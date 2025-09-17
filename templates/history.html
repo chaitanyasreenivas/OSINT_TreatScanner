@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-deep-space: #03001C;
+            --primary-dark-blue: #0a0129;
+            --secondary-glow-blue: #301E67;
+            --accent-cyan: #00FFFF;
+            --accent-magenta: #FF00FF;
+            --font-light: #E0E0E0;
+        }
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--background-deep-space);
+            color: var(--font-light);
+            margin: 40px;
+        }
+        .container {
+            width: 90%; max-width: 1000px; margin: auto;
+            background: rgba(10, 1, 41, 0.85); border: 1px solid var(--secondary-glow-blue);
+            backdrop-filter: blur(10px); border-radius: 10px; padding: 40px;
+            box-shadow: 0 0 25px rgba(48, 30, 103, 0.7);
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif; color: var(--accent-cyan);
+            text-align: center; margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid var(--secondary-glow-blue);
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-dark-blue);
+            color: var(--accent-cyan);
+        }
+        tr:nth-child(even) {
+            background-color: rgba(10, 1, 41, 0.5);
+        }
+        a {
+            color: var(--accent-cyan); text-decoration: none; font-weight: bold;
+        }
+        a:hover {
+            color: var(--accent-magenta);
+        }
+        .back-link {
+            display: block; text-align: center; margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scan History</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Target</th>
+                    <th>Type</th>
+                    <th>Date Scanned (UTC)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in scans %}
+                <tr>
+                    <td>{{ scan.id }}</td>
+                    <td>{{ scan.target }}</td>
+                    <td>{{ scan.target_type }}</td>
+                    <td>{{ scan.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td><a href="{{ url_for('view_report', scan_id=scan.id) }}">View Report</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No scans have been run yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/" class="back-link">[ New Scan ]</a>
+    </div>
+</body>
+</html>

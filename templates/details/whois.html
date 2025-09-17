@@ -1,0 +1,20 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}WHOIS Details{% endblock %}
+{% block header %}WHOIS Information{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        <ul>
+            {% for key, value in data.items() %}
+                <li><strong>{{ key }}</strong>
+                    {% if value is iterable and value is not string %}
+                        <ul>{% for item in value %}<li>{{ item }}</li>{% endfor %}</ul>
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

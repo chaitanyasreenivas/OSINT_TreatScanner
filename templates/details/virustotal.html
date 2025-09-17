@@ -1,0 +1,21 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}VirusTotal Details{% endblock %}
+{% block header %}VirusTotal Reputation{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        {% if data.error %}
+            <p class="error-message">{{ data.error }}</p>
+        {% else %}
+            <ul>
+                {% for key, value in data.items() %}
+                    <li>
+                        <strong>{{ key | title }}</strong>
+                        <span style="color: var(--vt-{{ key | lower }}, inherit); font-weight: bold;">{{ value }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

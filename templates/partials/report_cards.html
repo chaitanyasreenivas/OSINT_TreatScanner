@@ -1,0 +1,35 @@
+{# This template takes a dictionary called 'report_data' #}
+
+{% if 'file_report' in report_data %}
+    {% if report_data.file_report.error %}
+        <div class="result-card"><h3>File Report Error</h3><p class="error-message">{{ report_data.file_report.error }}</p></div>
+    {% else %}
+        <div class="result-card"><h3>File Details</h3>
+            <ul>{% for key, value in report_data.file_report.details.items() %}<li><strong>{{ key }}</strong>: {{ value|join(', ') if value is iterable and value is not string else value }}</li>{% endfor %}</ul>
+        </div>
+        <div class="result-card"><h3>VirusTotal Analysis</h3>
+            <div class="vt-summary-grid">
+                {% for key, value in report_data.file_report.analysis.items() %}
+                <div class="stat-box {{ key|lower }}">
+                    <span class="count">{{ value }}</span><span class="label">{{ key }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% elif 'error' in report_data %}
+    <div class="result-card full-width-card"><h3>Error</h3><p class="error-message">{{ report_data.error }}</p></div>
+{% else %}
+    {% if 'gravatar' in report_data %}<div class="result-card"><h3>Email Profile</h3><ul><li><strong>Gravatar Status:</strong> {{ report_data.gravatar.status }}</li></ul></div>{% endif %}
+    {% if report_data.threat_types %}<div class="result-card"><h3>Potential Threat Type</h3><div>{% for threat in report_data.threat_types %}<span class="threat-tag">{{ threat }}</span>{% endfor %}</div></div>{% endif %}
+    {% if report_data.virustotal %}<div class="result-card"><h3>VirusTotal Verdict</h3>{% if report_data.virustotal.error %}<p class="error-message">{{ report_data.virustotal.error }}</p>{% else %}<div class="vt-summary-grid"><div class="stat-box malicious"><span class="count">{{ report_data.virustotal.Malicious }}</span><span class="label">Malicious</span></div><div class="stat-box suspicious"><span class="count">{{ report_data.virustotal.Suspicious }}</span><span class="label">Suspicious</span></div><div class="stat-box harmless"><span class="count">{{ report_data.virustotal.Harmless }}</span><span class="label">Harmless</span></div><div class="stat-box"><span class="count">{{ report_data.virustotal.Undetected }}</span><span class="label">Undetected</span></div></div>{% endif %}</div>{% endif %}
+    {% if report_data.geolocation %}<div class="result-card"><h3>IP Geolocation</h3><ul><li><strong>Country:</strong> {{ report_data.geolocation.country }}</li><li><strong>City:</strong> {{ report_data.geolocation.city }}</li><li><strong>ISP:</strong> {{ report_data.geolocation.isp }}</li></ul></div>{% endif %}
+    {% if report_data.otx %}<div class="result-card"><h3>AlienVault OTX</h3>{% if report_data.otx.error %}<p class="error-message">{{ report_data.otx.error }}</p>{% else %}<ul><li><strong>Threat Pulses:</strong> {{ report_data.otx.pulse_count }}</li></ul>{% endif %}</div>{% endif %}
+    {% if report_data.mitre_attack %}<div class="result-card"><h3>Potential MITRE ATT&CK TTPs</h3><ul>{% for tech in report_data.mitre_attack %}<li><a href="https://attack.mitre.org/techniques/{{ tech.id.replace('.', '/') }}/" target="_blank" rel="noopener noreferrer"><strong>{{ tech.id }}: {{ tech.name }}</strong><span style="color: #aaa; display: block; margin-top: 4px;">Tactic: {{ tech.tactic }}</span></a></li>{% else %}<li>No specific techniques mapped.</li>{% endfor %}</ul></div>{% endif %}
+    {% if report_data.urlscan %}<div class="result-card"><h3>urlscan.io Report</h3>{% if report_data.urlscan.error %}<p class="error-message">{{ report_data.urlscan.error }}</p>{% else %}<ul><li><strong>Verdict:</strong> {{ report_data.urlscan.overall_verdict }}</li><li><strong>Main IP:</strong> {{ report_data.urlscan.main_ip }}</li><li><strong>Server Type:</strong> {{ report_data.urlscan.server_type or 'N/A' }}</li></ul>{% endif %}</div>{% endif %}
+    {% if report_data.dns_records %}<div class="result-card"><h3>DNS Records</h3><ul>{% for r, v in report_data.dns_records.items() %}<li><strong>{{r}}:</strong><ul>{% for item in v %}<li>{{ item }}</li>{% endfor %}</ul></li>{% endfor %}</ul></div>{% endif %}
+    {% if report_data.whois_info %}<div class="result-card"><h3>WHOIS Information</h3>{% if report_data.whois_info.Error %}<p class="error-message">{{ report_data.whois_info.Error }}</p>{% else %}<ul>{% for k, v in report_data.whois_info.items() %}<li><strong>{{k}}:</strong> {{v[0] if v is iterable and v is not string else v}}</li>{% endfor %}</ul>{% endif %}</div>{% endif %}
+    {% if report_data.certificate %}<div class="result-card"><h3>SSL Certificate</h3>{% if report_data.certificate.error %}<p class="error-message">{{ report_data.certificate.error }}</p>{% else %}<ul><li><strong>Subject CN:</strong> {{ report_data.certificate.subject.get('commonName', 'N/A') }}</li><li><strong>Issuer:</strong> {{ report_data.certificate.issuer.get('commonName', 'N/A') }}</li><li><strong>Alternative Names:</strong><ul>{% for name in report_data.certificate.subject_alt_names %}<li>{{ name }}</li>{% else %}<li>None</li>{% endfor %}</ul></li></ul>{% endif %}</div>{% endif %}
+    {% if report_data.reverse_dns %}<div class="result-card"><h3>Reverse DNS</h3><ul><li><strong>Hostname:</strong> {{ report_data.reverse_dns.hostname or 'N/A' }}</li></ul></div>{% endif %}
+    {% if report_data.shodan %}<div class="result-card"><h3>Shodan Scan</h3>{% if report_data.shodan.error %}<p class="error-message">{{ report_data.shodan.error }}</p>{% else %}<ul>{% for k, v in report_data.shodan.items() %}<li><strong>{{k}}:</strong> {{v|join(', ') if v is iterable and v is not string else v}}</li>{% endfor %}</ul>{% endif %}</div>{% endif %}
+{% endif %}

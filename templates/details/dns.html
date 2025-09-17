@@ -1,0 +1,16 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}DNS Details{% endblock %}
+{% block header %}DNS Records{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        <ul>
+            {% for record_type, values in data.items() %}
+                <li><strong>{{ record_type }}</strong>
+                    <ul>{% for value in values %}<li>{{ value }}</li>{% endfor %}</ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

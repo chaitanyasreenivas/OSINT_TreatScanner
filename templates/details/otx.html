@@ -1,0 +1,25 @@
+{% extends "details/details_page.html" %}
+
+{% block title %}OTX Details{% endblock %}
+{% block header %}AlienVault OTX Intelligence{% endblock %}
+
+{% block content %}
+    <div class="result-card">
+        {% if data.error %}
+            <p class="error-message">{{ data.error }}</p>
+        {% else %}
+            <ul>
+                <li><strong>Threat Pulses Found:</strong> {{ data.pulse_count }}</li>
+                <li><strong>Pulse Names (First 5):</strong>
+                    <ul>
+                        {% for name in data.pulse_names %}
+                            <li>{{ name }}</li>
+                        {% else %}
+                            <li>No threat pulses found.</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

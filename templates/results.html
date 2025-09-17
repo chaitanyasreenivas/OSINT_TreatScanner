@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Report for {{ scan.target }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        :root {
+            --background-deep-space: #03001C; --primary-dark-blue: #0a0129;
+            --secondary-glow-blue: #301E67; --accent-cyan: #00FFFF;
+            --accent-magenta: #FF00FF; --font-light: #E0E0E0;
+            --vt-malicious: #FF4500; --vt-suspicious: #FFA500;
+            --vt-harmless: #00FF7F; --vt-undetected: #6c757d;
+        }
+        body { font-family: 'Roboto Mono', monospace; background-color: var(--background-deep-space); color: var(--font-light); margin: 0; padding: 2em; }
+        .container { width: 95%; max-width: 1400px; margin: auto; }
+        h1 {
+            font-family: 'Orbitron', sans-serif; color: var(--accent-cyan);
+            text-align: center; margin-bottom: 10px; font-size: 2.5em; word-wrap: break-word; 
+            text-shadow: 0 0 10px var(--accent-cyan);
+        }
+        .subtitle { text-align: center; color: #aaa; margin-top: 0; margin-bottom: 40px; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .full-width-card {
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+        .result-card {
+            background: rgba(10, 1, 41, 0.85); border: 1px solid var(--secondary-glow-blue);
+            backdrop-filter: blur(10px); border-radius: 10px; padding: 20px;
+            box-shadow: 0 0 15px rgba(48, 30, 103, 0.5);
+            display: flex; flex-direction: column;
+        }
+        .result-card h3 {
+            margin-top: 0; color: var(--accent-cyan); border-bottom: 1px solid var(--secondary-glow-blue);
+            padding-bottom: 10px; margin-bottom: 15px; font-size: 1.2em;
+        }
+        .collapsible > h3 {
+            cursor: pointer; position: relative;
+        }
+        .collapsible > h3::after {
+            content: '►'; /* Triangle icon */
+            position: absolute; right: 5px; color: var(--accent-cyan); transition: transform 0.3s;
+        }
+        .collapsible.expanded > h3::after {
+            transform: rotate(90deg);
+        }
+        .card-content {
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .collapsible > .card-content {
+            max-height: 125px; /* Default collapsed height */
+        }
+        .collapsible.expanded > .card-content {
+            max-height: 1000px; /* Expanded height */
+        }
+        .result-card ul { list-style: none; padding: 0; margin: 0; word-wrap: break-word; flex-grow: 1; }
+        .result-card li { background-color: #03001C; padding: 10px; border-radius: 3px; margin-bottom: 8px; font-size: 0.9em; }
+        .result-card li a { color: var(--accent-cyan); text-decoration: none; font-weight: bold; }
+        .result-card li a:hover { color: var(--accent-magenta); }
+        .result-card li strong { color: var(--accent-cyan); display: block; margin-bottom: 3px;}
+        .result-card li .justification { color: #aaa; display: block; margin-top: 5px; font-style: italic;}
+        .result-card li ul { margin-top: 5px; padding-left: 20px; }
+        .result-card li ul li { padding: 2px; background: none; margin-bottom: 2px; }
+        .ai-summary-text { font-size: 1.1em; line-height: 1.6; color: var(--font-light); }
+        .error-message { color: var(--accent-magenta); font-weight: bold; }
+        .vt-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+        .stat-box { background-color: #03001C; padding: 15px; border-radius: 5px; border-left: 5px solid var(--vt-undetected); }
+        .stat-box .count { font-family: 'Orbitron', sans-serif; font-size: 2em; display: block; }
+        .stat-box .label { font-size: 0.9em; color: #aaa; }
+        .stat-box.malicious { border-left-color: var(--vt-malicious); } .stat-box.malicious .count { color: var(--vt-malicious); }
+        .stat-box.suspicious { border-left-color: var(--vt-suspicious); } .stat-box.suspicious .count { color: var(--vt-suspicious); }
+        .stat-box.harmless { border-left-color: var(--vt-harmless); } .stat-box.harmless .count { color: var(--vt-harmless); }
+        .threat-tag {
+            background-color: var(--accent-magenta); color: var(--font-light);
+            padding: 5px 10px; border-radius: 5px; font-weight: bold;
+            display: inline-block; margin: 2px; font-size: 0.8em;
+        }
+        .timeline { position: relative; margin: 15px 0 0 5px; padding-left: 25px; }
+        .timeline-event { position: relative; padding-bottom: 15px; }
+        .timeline-event::before {
+            content: ''; position: absolute; left: -5px; top: 5px; width: 10px;
+            height: 10px; border-radius: 50%; background-color: var(--accent-magenta);
+            border: 2px solid var(--accent-cyan);
+        }
+        .timeline-event::after {
+            content: ''; position: absolute; left: 0; top: 10px; bottom: -10px;
+            width: 2px; background-color: var(--secondary-glow-blue);
+        }
+        .timeline-event:last-child::after { display: none; }
+        .timeline-event .event-date { font-size: 0.85em; color: #aaa; margin-bottom: 5px; }
+        .timeline-event .event-description { font-size: 1em; font-weight: bold; }
+        .timeline-event .event-source { font-size: 0.8em; color: var(--accent-cyan); font-style: italic; }
+        .sigma-rule-container { position: relative; background-color: #03001C; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .sigma-rule-container pre { white-space: pre-wrap; word-break: break-all; margin: 0; }
+        .copy-button {
+            position: absolute; top: 10px; right: 10px; background-color: var(--accent-magenta);
+            color: var(--font-light); border: none; padding: 5px 10px;
+            border-radius: 5px; cursor: pointer; font-size: 0.8em; opacity: 0.7; transition: opacity 0.2s;
+        }
+        .copy-button:hover { opacity: 1; }
+        a.back-link { display: block; text-align: center; margin-top: 40px; color: var(--accent-cyan); text-decoration: none; font-weight: bold; font-size: 1.2em; }
+        #network-graph {
+            width: 100%;
+            height: 500px;
+            background-color: var(--background-deep-space);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ scan.target }}</h1>
+        <p class="subtitle">OSINT Analysis Report</p>
+        
+        {% if results.ai_summary %}<div class="result-card full-width-card"><h3>AI Executive Summary 🧠</h3><p class="ai-summary-text">{{ results.ai_summary }}</p></div>{% endif %}
+
+        {% if results.graph_data %}
+        <div class="result-card full-width-card collapsible expanded">
+            <h3>Infrastructure Graph 🌐</h3>
+            <div class="card-content">
+                <div id="network-graph"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% set report_data = results.domain_scan if 'domain_scan' in results else results %}
+
+        <div class="grid-container">
+            {% if 'file_report' in results %}
+            {% elif 'error' in results %}
+                <div class="result-card full-width-card"><h3>Error</h3><p class="error-message">{{ results.error }}</p></div>
+            {% else %}
+                {% if 'gravatar' in results %}<div class="result-card"><h3>Email Profile</h3><ul><li><strong>Gravatar Status:</strong> {{ results.gravatar.status }}</li></ul></div>{% endif %}
+                {% if results.threat_types %}<div class="result-card"><h3>Potential Threat Type</h3><div>{% for threat in results.threat_types %}<span class="threat-tag">{{ threat }}</span>{% else %}<p>No specific threat types identified.</p>{% endfor %}</div></div>{% endif %}
+                {% if report_data.virustotal %}<div class="result-card"><h3>VirusTotal Verdict</h3>{% if report_data.virustotal.error %}<p class="error-message">{{ report_data.virustotal.error }}</p>{% else %}<div class="vt-summary-grid"><div class="stat-box malicious"><span class="count">{{ report_data.virustotal.Malicious }}</span><span class="label">Malicious</span></div><div class="stat-box suspicious"><span class="count">{{ report_data.virustotal.Suspicious }}</span><span class="label">Suspicious</span></div><div class="stat-box harmless"><span class="count">{{ report_data.virustotal.Harmless }}</span><span class="label">Harmless</span></div><div class="stat-box"><span class="count">{{ report_data.virustotal.Undetected }}</span><span class="label">Undetected</span></div></div>{% endif %}</div>{% endif %}
+                {% if results.mitre_attack %}<div class="result-card collapsible"><h3>AI-Powered MITRE ATT&CK</h3><div class="card-content">{% if results.mitre_attack.error %}<p class="error-message">{{ results.mitre_attack.error }}</p>{% elif results.mitre_attack.info %}<p>{{ results.mitre_attack.info }}</p>{% else %}<ul>{% for tech in results.mitre_attack %}<li><a href="https://attack.mitre.org/techniques/{{ tech.id.replace('.', '/') }}/" target="_blank" rel="noopener noreferrer"><strong>{{ tech.id }}: {{ tech.name }}</strong><span style="color: #aaa; display: block; margin-top: 4px;">Tactic: {{ tech.tactic }}</span></a><span class="justification">Justification: {{ tech.justification }}</span></li>{% endfor %}</ul>{% endif %}</div></div>{% endif %}
+                {% if results.geolocation %}<div class="result-card"><h3>IP Geolocation</h3><ul><li><strong>Country:</strong> {{ results.geolocation.country }}</li><li><strong>City:</strong> {{ results.geolocation.city }}</li><li><strong>ISP:</strong> {{ results.geolocation.isp }}</li></ul></div>{% endif %}
+                {% if report_data.otx %}<div class="result-card collapsible"><h3>AlienVault OTX</h3><div class="card-content">{% if report_data.otx.error %}<p class="error-message">{{ report_data.otx.error }}</p>{% else %}<ul><li><strong>Threat Pulses:</strong> {{ report_data.otx.pulse_count }}</li>{% if report_data.otx.pulse_names %}<li><strong>Pulse Names:</strong><ul>{% for name in report_data.otx.pulse_names %}<li>{{ name }}</li>{% endfor %}</ul></li>{% endif %}</ul>{% endif %}</div></div>{% endif %}
+                {% if report_data.urlscan %}<div class="result-card collapsible"><h3>urlscan.io Report</h3><div class="card-content">{% if report_data.urlscan.error %}<p class="error-message">{{ report_data.urlscan.error }}</p>{% else %}<ul><li><strong>Verdict:</strong> {{ report_data.urlscan.verdict }}</li><li><strong>Main IP:</strong> {{ report_data.urlscan.ip }}</li><li><strong>Server Type:</strong> {{ report_data.urlscan.server_type or 'N/A' }}</li></ul>{% endif %}</div></div>{% endif %}
+                {% if report_data.dns_records %}<div class="result-card collapsible"><h3>DNS Records</h3><div class="card-content"><ul>{% for r, v in report_data.dns_records.items() %}<li><strong>{{r}}:</strong><ul>{% for item in v %}<li>{{ item }}</li>{% else %}<li>No records found.</li>{% endfor %}</ul></li>{% endfor %}</ul></div></div>{% endif %}
+                {% if report_data.whois_info %}<div class="result-card collapsible"><h3>WHOIS Information</h3><div class="card-content">{% if report_data.whois_info.Error %}<p class="error-message">{{ report_data.whois_info.Error }}</p>{% else %}<ul>{% for k, v in report_data.whois_info.items() %}<li><strong>{{k}}:</strong> {{v[0] if v is iterable and v is not string else v}}</li>{% endfor %}</ul>{% endif %}</div></div>{% endif %}
+                {% if report_data.certificate %}<div class="result-card collapsible"><h3>SSL Certificate</h3><div class="card-content">{% if report_data.certificate.error %}<p class="error-message">{{ report_data.certificate.error }}</p>{% else %}<ul><li><strong>Subject CN:</strong> {{ report_data.certificate.subject.get('commonName', 'N/A') }}</li><li><strong>Issuer:</strong> {{ report_data.certificate.issuer.get('commonName', 'N/A') }}</li><li><strong>Alternative Names:</strong><ul>{% for name in report_data.certificate.subject_alt_names %}<li>{{ name }}</li>{% else %}<li>None</li>{% endfor %}</ul></li></ul>{% endif %}</div></div>{% endif %}
+                {% if results.reverse_dns %}<div class="result-card"><h3>Reverse DNS</h3><ul><li><strong>Hostname:</strong> {{ results.reverse_dns.hostname or 'N/A' }}</li></ul></div>{% endif %}
+                {% if results.shodan %}<div class="result-card collapsible"><h3>Shodan Scan</h3><div class="card-content">{% if results.shodan.error %}<p class="error-message">{{ results.shodan.error }}</p>{% else %}<ul>{% for k, v in results.shodan.items() %}<li><strong>{{k}}:</strong> {{v|join(', ') if v is iterable and v is not string else v}}</li>{% endfor %}</ul>{% endif %}</div></div>{% endif %}
+                
+                {% if results.timeline %}
+                <div class="result-card collapsible">
+                    <h3>Event Timeline ⏳</h3>
+                    <div class="card-content timeline">
+                        {% for event in results.timeline %}
+                            <div class="timeline-event">
+                                <div class="event-date">{{ event.date }}</div>
+                                <div class="event-description">{{ event.event }}</div>
+                                <div class="event-source">Source: {{ event.source }}</div>
+                            </div>
+                        {% else %}
+                            <p>No historical events found.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+    
+                {% if results.sigma_rules %}
+                <div class="result-card collapsible">
+                    <h3>Threat Hunting Rules (Sigma) 📜</h3>
+                    <div class="card-content">
+                        {% for rule in results.sigma_rules %}
+                            <div class="sigma-rule-container">
+                                <button class="copy-button" onclick="copyToClipboard('sigma-rule-{{ loop.index }}', this)">Copy</button>
+                                <pre id="sigma-rule-{{ loop.index }}">{{ rule }}</pre>
+                            </div>
+                        {% else %}
+                            <p>No specific rules could be generated.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+        </div>
+
+        {% if results.ai_recommendations %}
+        <div class="result-card full-width-card">
+            <h3>AI Generated Recommendations 🛡️</h3>
+            <div class="ai-summary-text">{{ results.ai_recommendations | markdown | safe }}</div>
+        </div>
+        {% endif %}
+
+        <a href="/" class="back-link">[ New Scan ]</a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.collapsible > h3').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('expanded');
+                });
+            });
+        });
+        function copyToClipboard(elementId, button) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'Copied!';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        {% if results.graph_data %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const nodes = new vis.DataSet({{ results.graph_data.nodes | tojson | safe }});
+            const edges = new vis.DataSet({{ results.graph_data.edges | tojson | safe }});
+            const container = document.getElementById('network-graph');
+            const data = { nodes: nodes, edges: edges };
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    font: { color: '#E0E0E0', size: 14, face: 'Roboto Mono' }
+                },
+                edges: {
+                    width: 2,
+                    color: { inherit: 'from' }
+                },
+                physics: {
+                    solver: 'forceAtlas2Based',
+                    forceAtlas2Based: {
+                        gravitationalConstant: -50,
+                        centralGravity: 0.01,
+                        springLength: 200,
+                        springConstant: 0.08
+                    }
+                },
+                groups: {
+                    domain: { color: { background: '#FF00FF', border: '#FF00FF' }, size: 25 },
+                    ip: { color: { background: '#00FFFF', border: '#00FFFF' }, size: 15 },
+                    'co-hosted': { color: { background: '#FF4500', border: '#FF4500' }, shape: 'box', size: 20 }
+                }
+            };
+            const network = new vis.Network(container, data, options);
+        });
+        {% endif %}
+    </script>
+</body>
+</html>

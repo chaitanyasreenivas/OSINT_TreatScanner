@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreatScan // Intelligence Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/chartjs-chart-geo@4.2.0/build/index.umd.min.js"></script>
+    <style>
+        :root {
+            --background-deep-space: #03001C; --primary-dark-blue: #0a0129;
+            --secondary-glow-blue: #301E67; --accent-cyan: #00FFFF;
+            --accent-magenta: #FF00FF; --font-light: #E0E0E0; --font-dark: #333;
+            --glow-red: #ff1b4c;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Roboto Mono', monospace; background-color: var(--background-deep-space); color: var(--font-light); margin: 0; padding: 1.5em; }
+        .dashboard-container { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: auto 1fr auto; gap: 20px; max-width: 1800px; margin: auto; height: 95vh; }
+        .widget { background: rgba(10, 1, 41, 0.75); border: 1px solid var(--secondary-glow-blue); backdrop-filter: blur(8px); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; }
+        .widget h3 { margin-top: 0; color: var(--accent-cyan); border-bottom: 1px solid var(--secondary-glow-blue); padding-bottom: 10px; margin-bottom: 15px; font-size: 1.1em; }
+        .header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding: 0; background: none; border: none; backdrop-filter: none; }
+        .header h1 { font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 2em; text-shadow: 0 0 10px var(--accent-cyan); margin: 0; }
+        .kpi-bar { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .kpi-card { text-align: center; padding: 15px; }
+        .kpi-card .value { font-family: 'Orbitron', sans-serif; font-size: 2.5em; color: var(--accent-cyan); line-height: 1; }
+        .kpi-card .label { font-size: 0.9em; color: #aaa; margin-top: 8px; }
+        .main-map { grid-column: 4 / 10; grid-row: 2 / 3; }
+        .news-feed { grid-column: 1 / 4; grid-row: 2 / 3; }
+        .attackers-list { grid-column: 10 / -1; grid-row: 2 / 3; }
+        .scan-form { grid-column: 1 / -1; grid-row: 3 / 4; margin-top: 10px; }
+        .input-group { display: flex; width: 100%; margin: 0 auto; }
+        input[type="text"] { font-family: 'Roboto Mono', monospace; flex-grow: 1; padding: 15px; border: 1px solid var(--secondary-glow-blue); border-radius: 5px 0 0 5px; background-color: var(--background-deep-space); color: var(--font-light); font-size: 1em; outline: none; transition: all 0.3s ease; }
+        input[type="text"]:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+        input[type="submit"] { font-family: 'Orbitron', sans-serif; padding: 15px 30px; border: 1px solid var(--accent-cyan); border-left: none; border-radius: 0 5px 5px 0; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-magenta)); color: white; font-size: 1em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .scrollable-content { overflow-y: auto; height: 100%; }
+        .news-item { margin-bottom: 15px; } .news-item a { color: var(--font-light); text-decoration: none; display: block; }
+        .news-item a:hover { color: var(--accent-magenta); } .news-source { font-size: 0.8em; color: var(--accent-cyan); margin-top: 4px; }
+        .attacker-item { display: flex; justify-content: space-between; background-color: #03001C; padding: 8px; border-radius: 3px; margin-bottom: 8px; font-size: 0.9em; }
+        .history-link a { color: var(--accent-cyan); text-decoration: none; font-weight: bold; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <h1>TreatScan</h1>
+            <nav class="history-link"><a href="{{ url_for('history') }}">View Scan History</a></nav>
+        </header>
+
+        <div class="kpi-bar">
+            <div class="widget kpi-card"><div class="value">{{ kpis.total_attackers }}</div><div class="label">Top Attackers (24h)</div></div>
+            <div class="widget kpi-card"><div class="value">{{ kpis.countries_involved }}</div><div class="label">Countries Involved</div></div>
+            <div class="widget kpi-card"><div class="value">{{ kpis.top_country }}</div><div class="label">Top Attacking Country</div></div>
+            <div class="widget kpi-card"><div class="value">{{ kpis.intel_articles }}</div><div class="label">Intel Articles Today</div></div>
+        </div>
+
+        <div class="widget news-feed">
+            <h3>Threat Intelligence Feed</h3>
+            <div class="scrollable-content">
+                {% for item in news %}<div class="news-item"><a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title }}<div class="news-source">{{ item.source }}</div></a></div>{% endfor %}
+            </div>
+        </div>
+
+        <div class="widget main-map">
+            <canvas id="threatMap"></canvas>
+        </div>
+
+        <div class="widget attackers-list">
+            <h3>Top Attacker IPs</h3>
+            <div class="scrollable-content">
+                {% for attacker in attackers %}{% if not attacker.error %}<div class="attacker-item"><span>{{ attacker.ip }}</span><span>{{ attacker.country }}</span></div>{% endif %}{% endfor %}
+            </div>
+        </div>
+
+        <div class="widget scan-form">
+            <form action="/scan" method="post">
+                <div class="input-group">
+                    <input type="text" name="target" placeholder="Enter URL, IP, Email, or Username to Analyze..." required>
+                    <input type="submit" value="[ EXECUTE SCAN ]">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const countryData = {{ map_data | safe }};
+
+            fetch('https://unpkg.com/world-atlas/countries-50m.json')
+                .then((r) => r.json())
+                .then((data) => {
+                    const countries = ChartGeo.topojson.feature(data, data.objects.countries).features;
+                    const chart = new Chart(document.getElementById('threatMap').getContext('2d'), {
+                        type: 'choropleth',
+                        data: {
+                            labels: countries.map((d) => d.properties.name),
+                            datasets: [{
+                                label: 'Countries',
+                                data: countries.map((d) => ({ feature: d, value: countryData[d.properties.iso_a2] || 0 })),
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            showOutline: true,
+                            showGraticule: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const countryName = context.raw.feature.properties.name;
+                                            const count = context.raw.value || '0';
+                                            return `${countryName}: ${count} attacker(s)`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                xy: { projection: 'equalEarth' },
+                                color: {
+                                    axis: 'x',
+                                    interpolate: (value) => {
+                                        if (value <= 0) return 'rgba(48, 30, 103, 0.8)';
+                                        const intensity = Math.min(1, Math.log1p(value) / Math.log1p(10)); // Log scale for better visualization
+                                        return `rgba(255, 27, 76, ${intensity})`; // var(--glow-red)
+                                    },
+                                }
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
